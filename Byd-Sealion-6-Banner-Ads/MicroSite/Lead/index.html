@@ -1,0 +1,149 @@
+	<!DOCTYPE html>
+	<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			@import url(https://fonts.googleapis.com/css?family=Roboto);
+			body {
+				font-family: 'Roboto', sans-serif;
+				padding: 0px;
+				margin: 0px;
+				width: 100%;
+				height: 100%;
+			}
+
+			#formContainer {
+				position: absolute;
+				top: 4px;
+				left: 0px;
+			}
+
+			#form #name,
+			#form #number,
+			#form #email{
+				width: 300px;
+				height: 18px;
+				border: none;
+				padding: 8px;
+				background-color: white;
+				border-radius: 6px;
+				display: block;
+				margin-bottom: 10px;
+				border-style: solid;
+				border-width: 2px;
+				border-color: #434345;
+				font-size: 16px;
+			}
+
+
+			#form #button {
+				width: 122px;
+				height: 38px;
+				border: none;
+				cursor: pointer;
+				border-radius: 5px;
+				margin-left: 95px;
+				margin-top: 20px;
+				font-size: 17px;
+				background-position-y: 100px;
+				background-position-x: -22px;
+				background-color: #6b99e2;
+				color: white;
+			}
+
+			#error {
+				padding-left: 20px;
+				padding-right: 20px;
+				display: none;
+				padding-top: 5px;
+				padding-bottom: 5px;
+				font-size: 13px;
+			}
+
+			#processing {
+				margin-top: -28px;
+				color: #34a853;
+				font-size: 14px;
+				display: none;
+			}
+
+			#img_form_success{
+				display: none;
+				position: absolute;
+				top: 50px;
+				left: 55px;
+				font-size: 18px;
+				color: white;
+				width: 200px;
+				text-align: center;
+				line-height: 28px;
+				color: wheat;
+			}
+
+		</style>
+	</head>
+
+	<body>
+
+	<div id="img_form_success">
+	   <b> Thank you for sharing your details<br>
+	Will contact you soon...</b>
+	</div>
+
+	<div id="formContainer">
+	<p><font size="4" color="#ffffff"><center><b>Please provide below information.<br>We will contact you</b></center></font></p> 
+		<div id="form">
+			<form onsubmit="return validateForm()" method="post">
+				<input type="text" required name="name" id="name" placeholder="Name:">
+				<input type="text" required pattern="([0-9]{10})" name="contact" id="number" placeholder="Contact Number:">
+				<input type="text" required name="email" id="email" placeholder="Email:">
+				<input type="submit" name="submit" id="button" value="Submit">
+			</form>
+		</div>
+		<div id="processing">
+			Processing...
+		</div>
+		<div id="error">
+		</div>
+	</div>
+
+	<script>
+
+		function validateForm() {
+			document.getElementById('processing').style.display = 'block';
+			document.getElementById('error').style.display = 'none';
+			var http = new XMLHttpRequest();
+			var url = '../Lead/email-gsheet.php';
+			var params = "" +
+				'name=' + document.getElementById("name").value + '&' +
+				'contact=' + document.getElementById("number").value + '&' +
+				'email=' + document.getElementById("email").value + '&' +
+				'submit=submit';
+			http.open("POST", url, true);
+			http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			http.onreadystatechange = function () {
+				if (http.readyState < 4) {
+					document.getElementById('processing').style.display = 'block';
+				}
+				if (http.readyState == 4 && http.status == 200) {
+					if (http.responseText == 1) {
+						document.getElementById('formContainer').style.display = 'none';
+						document.getElementById('img_form_success').style.display = 'block';
+					} else {
+						document.getElementById('error').innerHTML = http.responseText;
+						document.getElementById('error').style.display = 'block';
+						document.getElementById('processing').style.display = 'none';
+					}
+				}
+			}
+			window.location.href= "../thankyou/final-index.html";
+			http.send(params);
+			return false;
+		}
+	</script>
+	</body>
+
+	</html>
